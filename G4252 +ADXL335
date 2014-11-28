@@ -1,0 +1,78 @@
+#include "Energia.h"
+#include "SoftwareSerial.h"
+
+	  int buttonState = 0;         // variable for reading the pushbutton status
+	  const int buttonPin = PUSH2;     // the number of the pushbutton
+	  float ADCResult_X, ADCResult_Y;
+	  float CalValue_X, CalValue_Y;
+	 // int ADCX, ADCY, ADCZ;
+
+	  int Xanalog = A7;     
+	  int Yanalog = A4;     
+
+
+
+
+void setup();
+void loop();
+
+
+void acc_cal(){
+
+	for (int i=0; i<5;i++)
+	{
+		CalValue_X+= analogRead(Xanalog); // Xova os
+
+		CalValue_Y+= analogRead(Yanalog); // Yova os
+
+
+	}
+			CalValue_X= CalValue_X/5; // Xova os
+
+			CalValue_Y= CalValue_Y/5; // Yova os
+
+
+
+}
+
+
+void setup() {
+  // put your setup code here, to run once:
+	pinMode(RED_LED, OUTPUT);
+	Serial.begin(9600);
+	  pinMode(buttonPin, INPUT_PULLUP);
+	  analogReference(INTERNAL2V5);
+	  acc_cal();
+
+
+
+}
+
+void loop() {
+  buttonState = digitalRead(buttonPin);
+	  if (buttonState == LOW)
+	  {
+		    digitalWrite(RED_LED, HIGH);
+		    ADCResult_X = ((analogRead(Xanalog)-CalValue_X)*(2.5/1023))/0.36;
+		    ADCResult_Y = ((analogRead(Yanalog)-CalValue_Y)*(2.5/1023))/0.36;
+
+		    Serial.print(ADCResult_X);
+		    Serial.print("\t");
+
+		   Serial.print(ADCResult_Y);
+		   Serial.print("\t");
+		   Serial.print("\n\r");
+
+
+
+			delay(100);
+			while(digitalRead(buttonPin) == LOW);
+			delay(100);
+		    digitalWrite(RED_LED, LOW);
+
+	  }
+
+  
+}
+
+
